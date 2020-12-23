@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>Label</key>
+		<string>com.cpusentinal</string>
+
+		<key>ProgramArguments</key>
+		<array>
+			<string>/Users/lstarrett/personal-projects/cpu-sentinal/cpu-sentinal.sh</string>
+			<string>-f</string>
+			<string>/Users/lstarrett/personal-projects/cpu-sentinal/process_list</string>
+		</array>
+
+		<key>StartInterval</key>
+		<integer>120</integer>
+
+		<key>StandardErrorPath</key>
+		<string>/Users/lstarrett/personal-projects/cpu-sentinal/err</string>
+
+		<key>StandardOutPath</key>
+		<string>/Users/lstarrett/personal-projects/cpu-sentinal/log</string>
+
+		<key>RunAtLoad</key>
+		<true/>
+	</dict>
+</plist>
