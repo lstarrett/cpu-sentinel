@@ -7,19 +7,19 @@
 
 		<key>ProgramArguments</key>
 		<array>
-			<string>/Users/lstarrett/personal-projects/cpu-sentinal/cpu-sentinal.sh</string>
+			<string>cpu-sentinal.sh</string>
 			<string>-f</string>
-			<string>/Users/lstarrett/personal-projects/cpu-sentinal/process_list</string>
+			<string>process_list</string>
 		</array>
 
 		<key>StartInterval</key>
 		<integer>120</integer>
 
 		<key>StandardErrorPath</key>
-		<string>/Users/lstarrett/personal-projects/cpu-sentinal/err</string>
+		<string>err</string>
 
 		<key>StandardOutPath</key>
-		<string>/Users/lstarrett/personal-projects/cpu-sentinal/log</string>
+		<string>log</string>
 
 		<key>RunAtLoad</key>
 		<true/>
