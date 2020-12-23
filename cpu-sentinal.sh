@@ -73,7 +73,7 @@ sentinal() {
 	fi
 	while true; do
 		build_pid_list
-		# renice $priority -p $pid_string
+		renice $priority -p $pid_string
 		if [ $reset ]; then
 			echo
 			echo "Priorities for processes in '$process_names_file' have been reset to system default. Exiting..."
