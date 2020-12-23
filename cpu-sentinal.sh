@@ -1,0 +1,151 @@
+#!/bin/bash
+
+# CPU Sentinal
+#
+# This script periodically scans for a list of process names, and uses the
+# `renice` utility to deprioritize the associated PIDs associated with those
+# process names.
+#
+# It can be run as a macOS Launch Daemon service to continuously monitor the
+# system and prevent chronically problematic processes from running away with
+# the CPU.
+#
+# Author(s): Lucas Starrett (luacs.c.starrett@gmail.com)
+# License: MIT
+
+
+display_help() {
+	echo >&2 "Usage:"
+	echo >&2 "   -h | --help   Display this help text"
+	echo >&2 "   -f FILE       Path to file containing list of process names to deprioritize"
+	echo >&2 "   -s SECONDS    Freqency in seconds to re-scan for process names (default: 60s)"
+	echo >&2 "   -p LEVEL      Priority level to set for identified processes"
+	echo >&2 "                   highest -20 --------- 0 --------- +20 lowest"
+	echo >&2 "                   System default: 0, CPU Sentinal default: +15"
+	echo >&2 "   --reset       Reset the prioritization of all processes in process names file to system default (0)"
+}
+
+
+# String of space-separated PIDs for renice command
+pid_string=''
+
+# Default scan frequency
+frequency=60
+
+# Default deprioritization level
+#   The macOS priority range for nice/renice is: (highest -20 ------ 0 ------ +20 lowest)
+#   The default priority is '0' for all processes.
+priority="+15"
+
+# Build list of PIDs corresponding to process names from input file
+build_pid_list() {
+	process_names=`cat $process_names_file`
+	if [ $reset ]; then
+		verb="reset"
+	elif [ $priority -gt 0 ]; then
+		verb="deprioritize"
+	else
+		verb="reprioritize"
+	fi
+	sentinal_list="\nProcess names and associated PIDs to $verb to $priority priority:"
+	sentinal_list="$sentinal_list\n-------------------------------------------------------------------"
+	for process in $process_names; do
+		matching_pids=`ps ax | grep $process | grep -v grep | awk '{print $1}'`
+		pid_string="$pid_string $matching_pids"
+		sentinal_list="$sentinal_list\n Process Name: $process\n \____ PID(s): $matching_pids"
+	done
+	echo -e $sentinal_list
+}
+
+# Scan for troublesome processes every
+sentinal() {
+	echo
+	if [ $reset ]; then
+		echo "Starting CPU Sentinal..."
+	else
+		echo "Starting CPU Sentinal (scanning for process names every $frequency seconds)..."
+	fi
+	while true; do
+		build_pid_list
+		renice $priority -p $pid_string
+		if [ $reset ]; then
+			echo
+			echo "Priorities for processes in '$process_names_file' have been reset to system default. Exiting..."
+			echo
+			exit 0
+		fi
+		sleep $frequency
+	done
+}
+
+
+# check arguments
+if [ $# -eq 0 ]; then
+	display_help
+else
+
+	# Check flags and parse options
+	while [ $# -gt 0 ]; do
+		case "$1" in
+			-h|--help)
+				display_help
+				exit 0
+				;;
+			-f)
+				shift
+				if [ $# -gt 0 ]; then
+					process_names_file=$1
+				else
+					display_help
+					exit 1
+				fi
+				shift
+				;;
+			-s)
+				shift
+				if [ $# -gt 0 ]; then
+					frequency=$1
+				else
+					display_help
+					exit 1
+				fi
+				shift
+				;;
+			-p)
+				shift
+				if [ $# -gt 0 ]; then
+					priority=$1
+				else
+					display_help
+					exit 1
+				fi
+				shift
+				;;
+			--reset)
+				reset=true
+				priority=0
+				shift
+				;;
+			*)
+				echo "Invalid argument. Aborting."
+				display_help
+				exit 1
+				;;
+		esac
+	done
+
+	# check that user has provided required --process-list argument
+	if [[ -z $process_names_file ]]; then
+		echo "Missing required --process-list argument. Aborting."
+		display_help
+		exit 1
+	fi
+	if [[ ! -f $process_names_file ]]; then
+		echo "Process names file not found at '$process_names_file'. Aborting."
+		exit 1
+	fi
+
+	# Start CPU sentinal
+	sentinal
+
+fi
