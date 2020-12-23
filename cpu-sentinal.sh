@@ -18,10 +18,10 @@ display_help() {
 	echo >&2 "Usage:"
 	echo >&2 "   -h | --help   Display this help text"
 	echo >&2 "   -f FILE       Path to file containing list of process names to deprioritize"
-	echo >&2 "   -s SECONDS    Freqency in seconds to re-scan for process names (default: 60s)"
-	echo >&2 "   -p LEVEL      Priority level to set for identified processes"
-	echo >&2 "                   highest -20 --------- 0 --------- +20 lowest"
-	echo >&2 "                   System default: 0, CPU Sentinal default: +15"
+	echo >&2 "   -s SECONDS    Freqency in seconds to re-scan for process names (default: run once and exit)"
+	echo >&2 "   -p LEVEL      Priority (\"niceness\") level to set for identified processes"
+	echo >&2 "                   highest -20 --------- 0 --------- 20 lowest"
+	echo >&2 "                   System default: 0, CPU Sentinal default: 20"
 	echo >&2 "   --reset       Reset the prioritization of all processes in process names file to system default (0)"
 }
 
@@ -29,17 +29,16 @@ display_help() {
 # String of space-separated PIDs for renice command
 pid_string=''
 
-# Default scan frequency
-frequency=60
+# Default scan frequency (0 to run once and exit)
+frequency=0
 
 # Default deprioritization level
-#   The macOS priority range for nice/renice is: (highest -20 ------ 0 ------ +20 lowest)
+#   The macOS priority range for nice/renice is: (highest -20 ------ 0 ------ 20 lowest)
 #   The default priority is '0' for all processes.
-priority="+15"
+priority="20"
 
 # Build list of PIDs corresponding to process names from input file
 build_pid_list() {
-	process_names=`cat $process_names_file`
 	if [ $reset ]; then
 		verb="reset"
 	elif [ $priority -gt 0 ]; then
@@ -49,21 +48,23 @@ build_pid_list() {
 	fi
 	sentinal_list="\nProcess names and associated PIDs to $verb to $priority priority:"
 	sentinal_list="$sentinal_list\n-------------------------------------------------------------------"
-	for process in $process_names; do
-		matching_pids=`ps ax | grep $process | grep -v grep | awk '{print $1}'`
+	while IFS='' read -r process || [ -n "${process}" ]; do
+		matching_pids=`ps ax | grep "$process" | grep -v grep | awk '{print $1}'`
 		pid_string="$pid_string $matching_pids"
 		sentinal_list="$sentinal_list\n Process Name: $process\n \____ PID(s): $matching_pids"
-	done
+	done < $process_names_file
 	echo -e $sentinal_list
 }
 
 # Scan for troublesome processes every
 sentinal() {
 	echo
-	if [ $reset ]; then
+	if [ $reset ] || [ $frequency -eq 0 ]; then
 		echo "Starting CPU Sentinal..."
+		echo $(date)
 	else
 		echo "Starting CPU Sentinal (scanning for process names every $frequency seconds)..."
+		echo $(date)
 	fi
 	while true; do
 		build_pid_list
@@ -73,7 +74,15 @@ sentinal() {
 			echo "Priorities for processes in '$process_names_file' have been reset to system default. Exiting..."
 			echo
 			exit 0
+		elif [ $frequency -eq 0 ]; then
+			echo
+			echo "Priorities for processes in '$process_names_file' have been set to '$priority'. Exiting..."
+			echo
+			exit 0
 		fi
+		echo
+		echo "Priorities for processes in '$process_names_file' have been set to '$priority'. Sleeping for $frequency seconds..."
+		echo
 		sleep $frequency
 	done
 }
