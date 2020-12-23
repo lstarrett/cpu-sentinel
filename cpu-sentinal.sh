@@ -49,6 +49,11 @@ build_pid_list() {
 	sentinal_list="\nProcess names and associated PIDs to $verb to $priority priority:"
 	sentinal_list="$sentinal_list\n-------------------------------------------------------------------"
 	while IFS='' read -r process || [ -n "${process}" ]; do
+		if [ "$process" = "One process name per line (can contain spaces)" ]; then
+			echo
+			echo "Edit process names file before running. Aborting."
+			exit 1
+		fi
 		matching_pids=`ps ax | grep "$process" | grep -v grep | awk '{print $1}'`
 		pid_string="$pid_string $matching_pids"
 		sentinal_list="$sentinal_list\n Process Name: $process\n \____ PID(s): $matching_pids"
@@ -68,7 +73,7 @@ sentinal() {
 	fi
 	while true; do
 		build_pid_list
-		renice $priority -p $pid_string
+		# renice $priority -p $pid_string
 		if [ $reset ]; then
 			echo
 			echo "Priorities for processes in '$process_names_file' have been reset to system default. Exiting..."
