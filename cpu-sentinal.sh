@@ -124,6 +124,10 @@ else
 				shift
 				if [ $# -gt 0 ]; then
 					priority=$1
+					if [ $priority -lt -20 ] || [ $priority -gt 20 ]; then
+						echo "Invalid priority value. Use a value between -20 and 20. Aborting."
+						exit 1
+					fi
 				else
 					display_help
 					exit 1
