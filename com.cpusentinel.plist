@@ -7,9 +7,13 @@
 
 		<key>ProgramArguments</key>
 		<array>
-			<string>cpu-sentinel.sh</string>
+			<string>cpu-sentinel</string>
 			<string>-f</string>
 			<string>process_list</string>
+			<string>-s</string>
+			<string>0</string>
+			<string>-p</string>
+			<string>20</string>
 		</array>
 
 		<key>StartInterval</key>
