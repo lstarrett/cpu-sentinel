@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# CPU Sentinal
+# CPU Sentinel
 #
 # This script periodically scans for a list of process names, and uses the
 # `renice` utility to deprioritize the associated PIDs associated with those
@@ -21,7 +21,7 @@ display_help() {
 	echo >&2 "   -s SECONDS    Freqency in seconds to re-scan for process names (default: run once and exit)"
 	echo >&2 "   -p LEVEL      Priority (\"niceness\") level to set for identified processes"
 	echo >&2 "                   highest -20 --------- 0 --------- 20 lowest"
-	echo >&2 "                   System default: 0, CPU Sentinal default: 20"
+	echo >&2 "                   System default: 0, CPU Sentinel default: 20"
 	echo >&2 "   --reset       Reset the prioritization of all processes in process names file to system default (0)"
 }
 
@@ -46,8 +46,8 @@ build_pid_list() {
 	else
 		verb="reprioritize"
 	fi
-	sentinal_list="\nProcess names and associated PIDs to $verb to $priority priority:"
-	sentinal_list="$sentinal_list\n-------------------------------------------------------------------"
+	sentinel_list="\nProcess names and associated PIDs to $verb to $priority priority:"
+	sentinel_list="$sentinel_list\n-------------------------------------------------------------------"
 	while IFS='' read -r process || [ -n "${process}" ]; do
 		if [ "$process" = "One process name per line (can contain spaces)" ]; then
 			echo
@@ -56,19 +56,19 @@ build_pid_list() {
 		fi
 		matching_pids=`ps ax | grep "$process" | grep -v grep | awk '{print $1}'`
 		pid_string="$pid_string $matching_pids"
-		sentinal_list="$sentinal_list\n Process Name: $process\n \____ PID(s): $matching_pids"
+		sentinel_list="$sentinel_list\n Process Name: $process\n \____ PID(s): $matching_pids"
 	done < $process_names_file
-	echo -e $sentinal_list
+	echo -e $sentinel_list
 }
 
 # Scan for troublesome processes every
-sentinal() {
+sentinel() {
 	echo
 	if [ $reset ] || [ $frequency -eq 0 ]; then
-		echo "Starting CPU Sentinal..."
+		echo "Starting CPU Sentinel..."
 		echo $(date)
 	else
-		echo "Starting CPU Sentinal (scanning for process names every $frequency seconds)..."
+		echo "Starting CPU Sentinel (scanning for process names every $frequency seconds)..."
 		echo $(date)
 	fi
 	while true; do
@@ -163,7 +163,7 @@ else
 		exit 1
 	fi
 
-	# Start CPU sentinal
-	sentinal
+	# Start CPU sentinel
+	sentinel
 
 fi

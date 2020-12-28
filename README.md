@@ -1,4 +1,4 @@
-# CPU Sentinal
+# CPU Sentinel
  > TODO
 
 

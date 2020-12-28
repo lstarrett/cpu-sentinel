@@ -3,11 +3,11 @@
 <plist version="1.0">
 	<dict>
 		<key>Label</key>
-		<string>com.cpusentinal</string>
+		<string>com.cpusentinel</string>
 
 		<key>ProgramArguments</key>
 		<array>
-			<string>cpu-sentinal.sh</string>
+			<string>cpu-sentinel.sh</string>
 			<string>-f</string>
 			<string>process_list</string>
 		</array>
