@@ -15,14 +15,20 @@
 
 
 display_help() {
-	echo >&2 "Usage:"
-	echo >&2 "   -h | --help   Display this help text"
-	echo >&2 "   -f FILE       Path to file containing list of process names to deprioritize"
-	echo >&2 "   -s SECONDS    Freqency in seconds to re-scan for process names (default: run once and exit)"
-	echo >&2 "   -p LEVEL      Priority (\"niceness\") level to set for identified processes"
-	echo >&2 "                   highest -20 --------- 0 --------- 20 lowest"
-	echo >&2 "                   System default: 0, CPU Sentinel default: 20"
-	echo >&2 "   --reset       Reset the prioritization of all processes in process names file to system default (0)"
+	echo "Usage:"
+	echo "   -h | --help     Display this help text"
+	echo "   -v | --version  Display CPU Sentinel version"
+	echo "   -f FILE         Path to file containing list of process names to deprioritize"
+	echo "   -s SECONDS      Freqency in seconds to re-scan for process names (default: run once and exit)"
+	echo "   -p LEVEL        Priority (\"niceness\") level to set for identified processes"
+	echo "                     highest -20 --------- 0 --------- 20 lowest"
+	echo "                     System default: 0, CPU Sentinel default: 20"
+	echo "   --reset         Reset the prioritization of all processes in process names file to system default (0)"
+}
+
+
+display_version() {
+	echo "CPU Sentinel v0.1 alpha"
 }
 
 
@@ -50,8 +56,8 @@ build_pid_list() {
 	sentinel_list="$sentinel_list\n-------------------------------------------------------------------"
 	while IFS='' read -r process || [ -n "$process" ]; do
 		if [ "$process" = "One process name per line (can contain spaces)" ]; then
-			echo
-			echo "Edit process names file before running. Aborting."
+			echo >&2
+			echo >&2 "Edit process names file before running. Aborting."
 			exit 1
 		fi
 		matching_pids=`pgrep $process`
@@ -105,6 +111,10 @@ else
 				display_help
 				exit 0
 				;;
+			-h|--help)
+				display_version
+				exit 0
+				;;
 			-f)
 				shift
 				if [ $# -gt 0 ]; then
@@ -130,7 +140,7 @@ else
 				if [ $# -gt 0 ]; then
 					priority=$1
 					if [ $priority -lt -20 ] || [ $priority -gt 20 ]; then
-						echo "Invalid priority value. Use a value between -20 and 20. Aborting."
+						echo >&2 "Invalid priority value. Use a value between -20 and 20. Aborting."
 						exit 1
 					fi
 				else
@@ -145,7 +155,7 @@ else
 				shift
 				;;
 			*)
-				echo "Invalid argument. Aborting."
+				echo >&2 "Invalid argument. Aborting."
 				display_help
 				exit 1
 				;;
@@ -154,12 +164,12 @@ else
 
 	# check that user has provided required --process-list argument
 	if [[ -z $process_names_file ]]; then
-		echo "Missing required --process-list argument. Aborting."
+		echo >&2 "Missing required --process-list argument. Aborting."
 		display_help
 		exit 1
 	fi
 	if [[ ! -f $process_names_file ]]; then
-		echo "Process names file not found at '$process_names_file'. Aborting."
+		echo >&2 "Process names file not found at '$process_names_file'. Aborting."
 		exit 1
 	fi
 
