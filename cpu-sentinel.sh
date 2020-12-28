@@ -48,7 +48,7 @@ build_pid_list() {
 	fi
 	sentinel_list="\nProcess names and associated PIDs to $verb to $priority priority:"
 	sentinel_list="$sentinel_list\n-------------------------------------------------------------------"
-	while IFS='' read -r process || [ -n "${process}" ]; do
+	while IFS='' read -r process || [ -n "$process" ]; do
 		if [ "$process" = "One process name per line (can contain spaces)" ]; then
 			echo
 			echo "Edit process names file before running. Aborting."
