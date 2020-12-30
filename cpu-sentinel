@@ -28,7 +28,7 @@ display_help() {
 
 
 display_version() {
-	echo "CPU Sentinel v0.2 alpha"
+	echo "CPU Sentinel v0.3 alpha"
 }
 
 
