@@ -82,12 +82,12 @@ sentinel() {
 		renice $priority -p $pid_string
 		if [ $reset ]; then
 			echo
-			echo "Priorities for processes in '$process_names_file' have been reset to system default. Exiting..."
+			echo "Priorities for processes in '$process_names_file' have been reset to system default."
 			echo
 			exit 0
 		elif [ $frequency -eq 0 ]; then
 			echo
-			echo "Priorities for processes in '$process_names_file' have been set to '$priority'. Exiting..."
+			echo "Priorities for processes in '$process_names_file' have been set to '$priority'."
 			echo
 			exit 0
 		fi
