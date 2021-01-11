@@ -72,7 +72,9 @@ Uninstall via Homebrew:
 1. `brew uninstall cpu-sentinel`
 2. `sudo rm <install directory>` (see NOTE below)
 3. `brew untap lstarrett/utilities`
-4. `rm -r /usr/local/var/log/homebrew.mxcl.cpu-sentinel.log /usr/local/var/homebrew.mxcl.cpu-sentinel.err /usr/local/etc/cpu-sentinal`
+4. `rm -r /usr/local/var/log/homebrew.mxcl.cpu-sentinel.log
+   /usr/local/var/homebrew.mxcl.cpu-sentinel.err /usr/local/etc/cpu-sentinal`
+   (see NOTE below)
 
 ### NOTE:
 The `brew uninstall` command will stop the service and remove the launchd
