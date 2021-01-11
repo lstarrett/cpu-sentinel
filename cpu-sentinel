@@ -23,12 +23,22 @@ display_help() {
 	echo "   -p LEVEL        Priority (\"niceness\") level to set for identified processes"
 	echo "                     highest -20 --------- 0 --------- 20 lowest"
 	echo "                     System default: 0, CPU Sentinel default: 20"
+	echo "   --config        Display config file path (if installed and run as a homebrew service)"
 	echo "   --reset         Reset the prioritization of all processes in process names file to system default (0)"
 }
 
 
 display_version() {
 	echo "CPU Sentinel v0.4 alpha"
+}
+
+
+display_config_path() {
+	brew_config_file="`brew --prefix`/etc/cpu-sentinel/procs.conf"
+	if [[ ! -f $brew_config_file ]]; then
+		echo >&2 "Config file not found at '$brew_config_file'. Did you install via Homebrew?"
+		exit 1
+	fi
 }
 
 
@@ -148,6 +158,10 @@ else
 					exit 1
 				fi
 				shift
+				;;
+			--config)
+				display_config_path
+				exit 0
 				;;
 			--reset)
 				reset=true
