@@ -18,12 +18,12 @@ display_help() {
 	echo "Usage:"
 	echo "   -h | --help     Display this help text"
 	echo "   -v | --version  Display CPU Sentinel version"
-	echo "   -f FILE         Path to file containing list of process names to deprioritize"
-	echo "   -s SECONDS      Freqency in seconds to re-scan for process names (default: run once and exit)"
-	echo "   -p LEVEL        Priority (\"niceness\") level to set for identified processes"
+	echo "   -f CONFIG       Path to config file containing list of process names to deprioritize"
+	echo "   -s SECONDS      Stay alive and re-scan for process names every SECONDS (default: run once and exit)"
+	echo "   -p PRIORITY     Priority (\"niceness\") level to set for identified processes"
 	echo "                     highest -20 --------- 0 --------- 20 lowest"
 	echo "                     System default: 0, CPU Sentinel default: 20"
-	echo "   --config        Display config file path (if installed and run as a homebrew service)"
+	echo "   --brew-config   Display config, log, and err file paths (if installed and run as a homebrew service)"
 	echo "   --reset         Reset the prioritization of all processes in process names file to system default (0)"
 }
 
@@ -33,13 +33,19 @@ display_version() {
 }
 
 
-display_config_path() {
+# Display config and log file paths for CPU Sentinel when installed as a Homebrew service
+display_homebrew_config() {
 	brew_config_file="`brew --prefix`/etc/cpu-sentinel/procs.conf"
 	if [[ ! -f $brew_config_file ]]; then
 		echo >&2 "Config file not found at '$brew_config_file'. Did you install via Homebrew?"
-		exit 1
 	fi
-	echo $brew_config_file
+	echo "CONFIG : $brew_config_file"
+
+	brew_log_file="`brew --prefix`/var/log/homebrew.mxcl.cpu-sentinel.log"
+	echo "LOG    : $brew_log_file"
+
+	brew_err_file="`brew --prefix`/var/log/homebrew.mxcl.cpu-sentinel.err"
+	echo "ERR    : $brew_err_file"
 }
 
 
@@ -160,8 +166,8 @@ else
 				fi
 				shift
 				;;
-			--config)
-				display_config_path
+			--brew-config)
+				display_homebrew_config
 				exit 0
 				;;
 			--reset)
