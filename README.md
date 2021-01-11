@@ -49,22 +49,22 @@ in the error log file.
 1. `brew update`
 2. `brew upgrade cpu-sentinel`
 3. `sudo rm <previous version install directory>` (see NOTE below)
-4. `brew service restart cpu-sentinel`
+4. `brew services restart cpu-sentinel`
 
 ### NOTE:
-Because CPU Sentinel requires root privilege to run as a Homebrew service,
-Homebrew will change the ownership of the CPU Sentinel installation directory
-upon service invocation. Since Homebrew itself cannot be run as root, this will
+Because the CPU Sentinel Homebrew service requires root privilege, Homebrew
+will change the ownership of the CPU Sentinel installation directory upon
+service invocation. Since Homebrew itself cannot be run as root, this will
 prevent Homebrew from uninstalling the previous version of CPU Sentinel each
 time CPU Sentinel is upgraded with `brew upgrade cpu-sentinel`.
 
 The `brew upgrade` command will successfully upgrade CPU Sentinel, but will
 fail to remove the root-owned previous version. Homebrew will offer the proper
-command and path to remove the previous install directory manually.
+command and path to remove the previous installation manually.
 
 Run the remove command with `sudo` which Homebrew offers, and subsequently the
-CPU Sentinel installation will be fully up-to-date and the service can be
-safely restarted.
+upgraded CPU Sentinel installation will be fully up-to-date and the service can
+be safely restarted.
 
 
 ## Uninstalling CPU Sentinel
