@@ -77,7 +77,7 @@ build_pid_list() {
 			echo >&2 "Edit process names file before running. Aborting."
 			exit 1
 		fi
-		matching_pids=`pgrep $process`
+		matching_pids=`pgrep "$process"`
 		pid_string="$pid_string $matching_pids"
 		sentinel_list="$sentinel_list\n Process Name: $process\n \____ PID(s): $matching_pids"
 	done < $process_names_file
