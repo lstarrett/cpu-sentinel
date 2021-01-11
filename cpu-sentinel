@@ -29,7 +29,7 @@ display_help() {
 
 
 display_version() {
-	echo "CPU Sentinel v0.4 alpha"
+	echo "CPU Sentinel v0.6 alpha"
 }
 
 
@@ -39,6 +39,7 @@ display_config_path() {
 		echo >&2 "Config file not found at '$brew_config_file'. Did you install via Homebrew?"
 		exit 1
 	fi
+	echo $brew_config_file
 }
 
 
